@@ -29,14 +29,23 @@ function createNotifier(config) {
     const now = Date.now();
     if (!cachedPort || now - cachedAt > 10_000) {
       cachedAt = now;
-      try {
-        const file = path.join(os.homedir(), ".tofu", "hook.json");
-        const descriptor = JSON.parse(fs.readFileSync(file, "utf8"));
-        if (Number.isInteger(descriptor.port) && descriptor.port >= 1024 && descriptor.port <= 65535) {
-          cachedPort = descriptor.port;
+      const appData = process.env.APPDATA || "";
+      const candidates = [
+        path.join(os.homedir(), ".tofu", "hook.json"),
+        path.join(appData, "Tofu", "hooks", "hook.json"),
+        path.join(appData, "Tofu", "hook.json"),
+        path.join(appData, "tofu-desktop-pet", "hooks", "hook.json"),
+      ];
+      for (const file of candidates) {
+        try {
+          const descriptor = JSON.parse(fs.readFileSync(file, "utf8"));
+          if (Number.isInteger(descriptor.port) && descriptor.port >= 1024 && descriptor.port <= 65535) {
+            cachedPort = descriptor.port;
+            break;
+          }
+        } catch {
+          // Try the next location, including Tofu's userData fallback.
         }
-      } catch {
-        // Tofu may not be running, or it may be using its installer fallback.
       }
     }
     return cachedPort ? `http://127.0.0.1:${cachedPort}` : DEFAULT_URL;
