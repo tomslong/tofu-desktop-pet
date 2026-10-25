@@ -84,9 +84,19 @@ body {
   filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.08)) brightness(1.015);
 }
 
+.pet-root {
+  /* Distance between the bubble tail and the cat's head. Lower = closer. */
+  --bubble-gap: 20px;
+  /* Updated from JS whenever the pet scale changes. */
+  --bubble-anchor: 302px;
+  /* Pushes a tall bubble down so it never clips at the window edge. */
+  --bubble-shift: 0px;
+}
+
 .bubble-wrap {
   position: absolute;
-  top: 8px;
+  top: auto;
+  bottom: calc(var(--bubble-anchor) + var(--bubble-gap) - var(--bubble-shift));
   left: 50%;
   width: 316px;
   margin-left: -158px;
@@ -154,14 +164,15 @@ body {
 
 .bubble {
   position: relative;
-  max-width: 304px;
-  min-width: 168px;
-  padding: 11px 30px 11px 13px;
+  max-width: calc(304px * var(--bubble-scale, 1));
+  min-width: calc(168px * var(--bubble-scale, 1));
+  padding: calc(11px * var(--bubble-scale, 1)) calc(30px * var(--bubble-scale, 1))
+    calc(11px * var(--bubble-scale, 1)) calc(13px * var(--bubble-scale, 1));
   color: var(--ink);
   background: var(--paper-bright);
   border: 2px solid var(--ink);
   border-radius: 2px;
-  box-shadow: 4px 4px 0 var(--shadow);
+  box-shadow: calc(4px * var(--bubble-scale, 1)) calc(4px * var(--bubble-scale, 1)) 0 var(--shadow);
   pointer-events: auto;
   animation: bubble-in 150ms steps(3);
 }
@@ -174,10 +185,10 @@ body {
 .bubble::after {
   content: "";
   position: absolute;
-  bottom: -8px;
-  left: calc(50% - 7px);
-  width: 10px;
-  height: 10px;
+  bottom: calc(-8px * var(--bubble-scale, 1));
+  left: calc(50% - 7px * var(--bubble-scale, 1));
+  width: calc(10px * var(--bubble-scale, 1));
+  height: calc(10px * var(--bubble-scale, 1));
   background: var(--paper-bright);
   border-right: 2px solid var(--ink);
   border-bottom: 2px solid var(--ink);
@@ -185,10 +196,10 @@ body {
 }
 
 .bubble::after {
-  bottom: -6px;
-  left: calc(50% - 6px);
-  width: 8px;
-  height: 8px;
+  bottom: calc(-6px * var(--bubble-scale, 1));
+  left: calc(50% - 6px * var(--bubble-scale, 1));
+  width: calc(8px * var(--bubble-scale, 1));
+  height: calc(8px * var(--bubble-scale, 1));
   background: var(--paper-bright);
   border: 0;
   box-shadow: 2px 2px 0 var(--shadow);
@@ -209,7 +220,7 @@ body {
 .bubble-text {
   margin: 0;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: calc(12px * var(--bubble-scale, 1));
   line-height: 1.45;
   font-weight: 500;
   letter-spacing: -0.15px;
@@ -234,17 +245,17 @@ body {
 
 .bubble-close {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 18px;
-  height: 18px;
+  top: calc(6px * var(--bubble-scale, 1));
+  right: calc(6px * var(--bubble-scale, 1));
+  width: calc(18px * var(--bubble-scale, 1));
+  height: calc(18px * var(--bubble-scale, 1));
   padding: 0;
   border: 1px solid transparent;
   background: transparent;
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 14px;
-  line-height: 15px;
+  font-size: calc(14px * var(--bubble-scale, 1));
+  line-height: calc(15px * var(--bubble-scale, 1));
   text-align: center;
   cursor: pointer;
   border-radius: 1px;

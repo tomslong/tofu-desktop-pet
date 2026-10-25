@@ -42,6 +42,7 @@ const VALID_STATES = new Set([
 const CARE_COOLDOWN = { pet: 700, feed: 1100, play: 1800, nap: 30000 };
 const PET_SCALE_MIN = 0.5;
 const PET_SCALE_MAX = 1.2;
+const BUBBLE_GAP = 20;
 const JOY_MS = 30 * 60 * 1000;
 const ENERGY_MS = 20 * 60 * 1000;
 const TREAT_MS = 2 * 60 * 60 * 1000;
@@ -393,13 +394,14 @@ function prepareHookCli() {
   try {
     fs.mkdirSync(tofuDir, { recursive: true });
     fs.accessSync(tofuDir, fs.constants.W_OK);
+    const probe = path.join(tofuDir, ".tofu-write-test");
+    fs.writeFileSync(probe, "ok");
+    fs.rmSync(probe, { force: true });
   } catch (error) {
     log(`[tofu] home hook dir unavailable (${error.message}); falling back to userData`);
     tofuDir = path.join(app.getPath("userData"), "hooks");
     fs.mkdirSync(tofuDir, { recursive: true });
   }
-  hookPortFile = path.join(tofuDir, "hook.json");
-  log(`[tofu] hook cli dir: ${tofuDir}`);
 
   let cli = source;
   if (app.isPackaged) {
@@ -408,9 +410,18 @@ function prepareHookCli() {
       fs.writeFileSync(target, fs.readFileSync(source));
       cli = target;
     } catch (error) {
-      log(`[tofu] could not stage hook CLI: ${error.message}`);
+      // Some restricted Windows profiles allow mkdir/access but deny writes.
+      log(`[tofu] could not stage hook CLI (${error.message}); using userData`);
+      tofuDir = path.join(app.getPath("userData"), "hooks");
+      fs.mkdirSync(tofuDir, { recursive: true });
+      const fallback = path.join(tofuDir, "tofu-hook.mjs");
+      fs.writeFileSync(fallback, fs.readFileSync(source));
+      cli = fallback;
     }
   }
+
+  hookPortFile = path.join(tofuDir, "hook.json");
+  log(`[tofu] hook cli dir: ${tofuDir}`);
   hookCommand = `node ${quoteArg(cli)} pre --tool edit`;
 }
 
@@ -691,10 +702,13 @@ function isCursorOverPet() {
   // Mirrors the CSS stage geometry: the canvas is bottom-aligned at y=404,
   // 256px tall, and scaled from an origin 91% down its own height.
   const half = 128 * size + 12;
-  const top = 148 + 232.96 * (1 - size) - 12;
-  const stage = x >= 170 - half && x <= 170 + half && y >= top && y <= 416;
+  const canvasTop = 148 + 232.96 * (1 - size);
+  const stage = x >= 170 - half && x <= 170 + half && y >= canvasTop - 12 && y <= 416;
   const dock = x >= 16 && x <= 324 && y >= 404 && y <= 446;
-  const bubble = bubbleVisible && x >= 6 && x <= 334 && y >= 0 && y <= 156;
+  const bubbleBottom = canvasTop - BUBBLE_GAP;
+  const bubbleTop = Math.max(0, bubbleBottom - 170);
+  const bubble =
+    bubbleVisible && x >= 6 && x <= 334 && y >= bubbleTop && y <= bubbleBottom + 40;
   return stage || dock || bubble;
 }
 

@@ -106,7 +106,27 @@ const bubble = {
   hideTimer: 0,
   token: 0,
   text: "",
+  shift: 0,
 };
+
+function setBubbleShift(value) {
+  const next = Math.max(0, Math.round(value));
+  if (next === bubble.shift) return;
+  bubble.shift = next;
+  els.root.style.setProperty("--bubble-shift", `${next}px`);
+}
+
+// Long messages are allowed to move down and overlap the cat slightly instead
+// of being clipped by the top edge of the transparent window.
+function fitBubble() {
+  if (!els.bubble || els.bubble.hidden) {
+    setBubbleShift(0);
+    return;
+  }
+  setBubbleShift(0);
+  const top = els.bubble.getBoundingClientRect().top;
+  if (top < 8) setBubbleShift(Math.min(160, 8 - top));
+}
 
 function titleCase(value = "") {
   return String(value)
@@ -117,17 +137,33 @@ function titleCase(value = "") {
     .join(" ");
 }
 
+function updatePetLayout() {
+  const scale = Number(prefs.size) || 1;
+  document.documentElement.style.setProperty("--pet-scale", String(scale));
+  // The bubble follows the pet when it shrinks, but never below 72% or the
+  // pixel font stops being readable. It does not grow past 100% either,
+  // because that would make the card wider than the window.
+  const bubbleScale = Math.max(0.72, Math.min(1, scale));
+  document.documentElement.style.setProperty("--bubble-scale", bubbleScale.toFixed(3));
+  // Keep the bubble anchored just above the scaled canvas, independent of
+  // window height. The CSS --bubble-gap decides the actual visual distance.
+  const canvasTop = window.innerHeight - 46 - 256 + 256 * 0.91 * (1 - scale);
+  const anchor = Math.round(window.innerHeight - canvasTop);
+  els.root.style.setProperty("--bubble-anchor", `${anchor}px`);
+  requestAnimationFrame(fitBubble);
+}
+
 function applyProfile() {
   els.dockName.textContent = (profile.name || "Tofu").toUpperCase();
   engine.setPalette(profile.palette);
-  document.documentElement.style.setProperty("--pet-scale", String(prefs.size || 1));
+  updatePetLayout();
 }
 
 function applyPrefs() {
   ghost = Boolean(prefs.ghost);
   engine.setReducedMotion(Boolean(prefs.reducedMotion));
   audio.setEnabled(Boolean(prefs.sound));
-  document.documentElement.style.setProperty("--pet-scale", String(prefs.size || 1));
+  updatePetLayout();
   document.body.classList.toggle("ghost", ghost);
   els.root.classList.toggle("ghost-root", ghost);
 }
@@ -154,6 +190,7 @@ function showBubble(text, options = {}) {
   els.bubble.hidden = false;
   const bubbleState = api.setBubbleVisible?.(true);
   bubbleState?.catch?.(() => {});
+  setBubbleShift(0);
   els.bubbleText.textContent = "";
   els.bubbleText.classList.add("typing");
   bubble.text = message;
@@ -166,6 +203,7 @@ function showBubble(text, options = {}) {
     if (token !== bubble.token) return;
     index = Math.min(chars.length, index + step);
     els.bubbleText.textContent = chars.slice(0, index).join("");
+    fitBubble();
     if (index >= chars.length) {
       clearInterval(bubble.typingTimer);
       els.bubbleText.classList.remove("typing");
@@ -185,6 +223,7 @@ function hideBubble() {
   clearTimeout(bubble.hideTimer);
   els.bubbleText.classList.remove("typing");
   els.bubble.hidden = true;
+  setBubbleShift(0);
   const bubbleState = api.setBubbleVisible?.(false);
   bubbleState?.catch?.(() => {});
 }
@@ -495,6 +534,8 @@ api.onState((next) => {
 });
 
 api.onAgent((event) => applyAgentEvent(event));
+
+window.addEventListener("resize", updatePetLayout);
 
 api.onCommand((command) => {
   if (!command) return;
