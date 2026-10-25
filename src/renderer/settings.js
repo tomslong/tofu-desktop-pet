@@ -79,6 +79,10 @@ const els = {
   hookLabel: document.getElementById("hook-label"),
   hookCommand: document.getElementById("hook-command"),
   copyCode: document.getElementById("copy-code"),
+  dshPath: document.getElementById("dsh-path"),
+  dshReady: document.getElementById("dsh-ready"),
+  copyDshPath: document.getElementById("copy-dsh-path"),
+  copyDshInstall: document.getElementById("copy-dsh-install"),
   barJoy: document.getElementById("bar-joy"),
   barEnergy: document.getElementById("bar-energy"),
   barTreats: document.getElementById("bar-treats"),
@@ -171,6 +175,17 @@ function updateHook() {
   if (document.activeElement !== els.portInput) els.portInput.value = String(port);
   els.hookCommand.textContent = runtime.hookCommand || `node bin/tofu-hook.mjs pre --tool edit`;
   els.hookCommand.title = els.hookCommand.textContent;
+  updateDsh();
+}
+
+function updateDsh() {
+  const pluginPath = runtime.dshPluginPath || "";
+  els.dshPath.textContent = pluginPath || "未找到 dsh-plugin 目录";
+  els.dshPath.title = pluginPath || "请重新构建 Tofu，或从仓库的 integrations/dsh 安装";
+  els.dshReady.textContent = pluginPath ? "READY" : "MISSING";
+  els.dshReady.classList.toggle("missing", !pluginPath);
+  els.copyDshPath.disabled = !pluginPath;
+  els.copyDshInstall.disabled = !pluginPath;
 }
 
 function populate() {
@@ -321,6 +336,29 @@ els.copyCode.addEventListener("click", async () => {
     showToast("命令已复制");
   } catch {
     showToast("复制失败，选中文字手动复制吧");
+  }
+});
+
+els.copyDshPath.addEventListener("click", async () => {
+  const pluginPath = runtime.dshPluginPath;
+  if (!pluginPath) return;
+  try {
+    await bridge.copyText(pluginPath);
+    showToast("DSH 插件目录已复制");
+  } catch {
+    showToast("复制失败，选中路径手动复制吧");
+  }
+});
+
+els.copyDshInstall.addEventListener("click", async () => {
+  const pluginPath = runtime.dshPluginPath;
+  if (!pluginPath) return;
+  const instruction = `请用 plugin_manager 的 install_bundle 安装这个 Tofu DSH 插件：\n${pluginPath}`;
+  try {
+    await bridge.copyText(instruction);
+    showToast("安装指令已复制，去 DSH 里粘贴");
+  } catch {
+    showToast("复制失败，选中路径手动复制吧");
   }
 });
 

@@ -237,6 +237,32 @@
             </p>
           </details>
         </div>
+
+        <div class="dsh-card">
+          <div class="dsh-top">
+            <div class="dsh-brand">
+              <span class="dsh-badge">DSH</span>
+              <div>
+                <h3>DeepSeek Harness</h3>
+                <p>HOST-ONLY BUNDLE</p>
+              </div>
+            </div>
+            <span class="dsh-ready" id="dsh-ready">READY</span>
+          </div>
+          <p class="dsh-desc">
+            安装本地 bundle 后，DSH 的工具调用、turn 结束和等待确认会自动同步给 Tofu。
+            只发送工具名和生命周期事件，不发送提示词、参数或文件内容。
+          </p>
+          <div class="dsh-path-row">
+            <code id="dsh-path">integrations/dsh</code>
+            <button type="button" class="dsh-button" id="copy-dsh-path" aria-label="复制 DSH 插件目录">复制目录</button>
+          </div>
+          <div class="dsh-actions">
+            <button type="button" class="mini-btn" id="copy-dsh-install" aria-label="复制 DSH 插件安装指令">复制安装指令</button>
+            <span>然后在 DSH 里对 agent 说：安装这个 bundle</span>
+          </div>
+          <p class="dsh-note">安装说明见 <code>docs/DSH.md</code> · DSH 0.2.1+</p>
+        </div>
       </section>
 
       <section class="section">

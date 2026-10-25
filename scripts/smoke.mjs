@@ -7,7 +7,7 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import puppeteer from "puppeteer-core";
 
 const require = createRequire(import.meta.url);
@@ -89,6 +89,13 @@ async function checkFiles() {
     "src/renderer/pet.js",
     "src/renderer/settings.js",
     "bin/tofu-hook.mjs",
+    "integrations/dsh/index.js",
+    "integrations/dsh/package.json",
+    "integrations/dsh/cordis.patch.yml",
+    "integrations/dsh/locale/en.json",
+    "integrations/dsh/locale/zh.json",
+    "integrations/dsh/icon.svg",
+    "docs/DSH.md",
     "assets/icon.png",
     "assets/tray.png",
     "assets/fonts/FusionPixel12-zh.woff2",
@@ -171,6 +178,86 @@ async function checkHookServer() {
     assert.equal(origin.status, 403);
   } finally {
     await server.stop();
+  }
+}
+
+async function checkDshPlugin() {
+  const handlers = new Map();
+  let disposedCount = 0;
+  const ctx = {
+    on(event, handler) {
+      handlers.set(event, handler);
+      return () => {
+        disposedCount += 1;
+      };
+    },
+  };
+
+  const calls = [];
+  const previousFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url: String(url), body: JSON.parse(init.body) });
+    return { ok: true, json: async () => ({}) };
+  };
+
+  try {
+    const pluginUrl = pathToFileURL(path.join(ROOT, "integrations/dsh/index.js")).href;
+    const plugin = await import(`${pluginUrl}?smoke=${Date.now()}`);
+    assert.equal(typeof plugin.apply, "function");
+    const dispose = plugin.apply(ctx, { url: "http://tofu.test", source: "dsh-test" });
+    assert.equal(typeof dispose, "function");
+
+    handlers.get("agent/created")({});
+    let preStepNext = false;
+    await handlers.get("agent/pre-step")({ step: 1 }, async () => {
+      preStepNext = true;
+      return { kind: "allow" };
+    });
+    assert.equal(preStepNext, true);
+
+    let preToolNext = false;
+    const decision = await handlers.get("tools/pre-execute")({ name: "read_file" }, async () => {
+      preToolNext = true;
+      return { kind: "allow" };
+    });
+    assert.equal(preToolNext, true);
+    assert.equal(decision.kind, "allow");
+
+    await handlers.get("tools/pre-execute")({ name: "ask_user" }, async () => ({ kind: "allow" }));
+    handlers.get("tools/result")({ name: "read_file" }, { isError: false });
+    handlers.get("tools/result")({ name: "bash" }, { isError: true });
+    handlers.get("agent/turn-stopping")({});
+    handlers.get("agent/error")({});
+    handlers.get("agent/disposed")({});
+
+    let questionNext = false;
+    await handlers.get("user-questions/request")({}, async () => {
+      questionNext = true;
+      return {};
+    });
+    assert.equal(questionNext, true);
+
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    const types = calls.map((call) => call.body.type);
+    assert.deepEqual(types, [
+      "session-start",
+      "user-prompt",
+      "pre",
+      "waiting",
+      "post",
+      "failure",
+      "stop",
+      "failure",
+      "session-end",
+      "waiting",
+    ]);
+    assert.ok(calls.every((call) => call.url === "http://tofu.test/event"));
+    assert.ok(calls.every((call) => call.body.source === "dsh-test"));
+
+    dispose();
+    assert.equal(disposedCount, handlers.size);
+  } finally {
+    globalThis.fetch = previousFetch;
   }
 }
 
@@ -283,6 +370,7 @@ console.log("TOFU smoke test\n");
 await check("required files", checkFiles);
 await check("store persistence", checkStore);
 await check("hook server", checkHookServer);
+await check("DSH bridge plugin", checkDshPlugin);
 await check("renderer + settings", checkBrowser);
 
 console.log(`\n${results.filter((item) => item.ok).length}/${results.length} checks passed`);

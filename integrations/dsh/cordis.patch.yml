@@ -1,0 +1,6 @@
+- insert:
+    - id: tofu-dsh-bridge
+      name: '@tofu/dsh-bridge'
+      config:
+        source: dsh
+        # url: http://127.0.0.1:41234

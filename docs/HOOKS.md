@@ -2,6 +2,8 @@
 
 Tofu listens for events from coding agents on a tiny loopback HTTP server and turns them into desktop reactions. Nothing leaves your machine.
 
+> **DeepSeek Harness users:** install the native Host-only bundle described in [DSH.md](DSH.md) instead of wiring hooks manually.
+
 ```text
 agent hook / shell
         │

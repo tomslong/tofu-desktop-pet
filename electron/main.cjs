@@ -143,6 +143,17 @@ function careSnapshot() {
   };
 }
 
+function dshPluginPath() {
+  const candidate = app.isPackaged
+    ? path.join(process.resourcesPath, "dsh-plugin")
+    : path.join(ROOT, "integrations", "dsh");
+  try {
+    return fs.existsSync(path.join(candidate, "package.json")) ? candidate : "";
+  } catch {
+    return "";
+  }
+}
+
 function getRuntime() {
   return {
     appVersion: app.getVersion(),
@@ -151,6 +162,7 @@ function getRuntime() {
     hookPort: hookStatus.port,
     hookError: hookStatus.error || "",
     hookCommand,
+    dshPluginPath: dshPluginPath(),
     isPackaged: app.isPackaged,
     firstRun: Boolean(store.get().firstRun),
   };

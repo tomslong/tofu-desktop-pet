@@ -12,6 +12,7 @@ Tofu 的灵感来自 [Petdex](https://petdex.dev/) 那种「桌面上的小像�
 - **十一种像素状态**：发呆（带眨眼和呼吸）、开心、工作、审查、等待、报错、招手、跳跃、睡觉、吃东西、被拖走。眼睛会追着鼠标看。
 - **真的能互动**：单击摸头、双击陪玩、拖动搬家、右键菜单、托盘投喂。心情/精力/饼干会随时间变化，并持久化。
 - **和 coding agent 联动**：内置一个只监听 `127.0.0.1` 的 hook server。agent 跑到哪一步，Tofu 就在桌面上打字、拿放大镜，或者抬头等你确认。
+- **DSH 原生插件**：仓库内含 `@tofu/dsh-bridge` Host-only bundle，安装后 DSH 的工具、turn、提问事件会自动同步；设置页有一键复制目录和安装指令。
 - **离线且有边界**：不上传任何东西，不注入到你的编辑器，不修改 agent 配置。hook 服务器拒绝带 `Origin` 的浏览器请求。
 
 | 桌面上的 Tofu | 设置面板 |
@@ -75,7 +76,15 @@ node bin/tofu-hook.mjs bubble --text "build is green"
 | `failure` / `tool-failure` | 耳朵耷拉，掉眼泪 |
 | `bubble --text "..."` | 只说一句话，不改状态 |
 
-设置页 **03 助手联动** 会显示当前真实的命令（带绝对路径）和端口，并提供「演示一轮 / 完成 / 报错 / 等待确认」按钮。接 Claude Code 的完整 `settings.json` 示例见 **[docs/HOOKS.md](docs/HOOKS.md)**。任何能执行 shell 的 agent 都可以用：
+设置页 **03 助手联动** 会显示当前真实的命令（带绝对路径）和端口，并提供「演示一轮 / 完成 / 报错 / 等待确认」按钮。接 Claude Code 的完整 `settings.json` 示例见 **[docs/HOOKS.md](docs/HOOKS.md)**。
+
+### DeepSeek Harness
+
+Tofu 仓库里带了一个 DSH Host-only bundle：`integrations/dsh`（包名 `@tofu/dsh-bridge`）。在 Tofu 设置页的 **DeepSeek Harness** 卡片复制安装指令，然后在 DSH 里让 agent 用 `plugin_manager` 的 `install_bundle` 安装该目录即可。安装后，DSH 工具调用、turn 结束、`ask_user` 等待都会自动同步给 Tofu。
+
+完整说明见 **[docs/DSH.md](docs/DSH.md)**。
+
+任何能执行 shell 的 agent 也都可以用：
 
 ```bash
 TOFU_HOOK_PORT=41234 node /path/to/tofu-hook.mjs pre --tool edit --source my-agent
@@ -119,9 +128,11 @@ src/
     messages.js    台词库
     audio.js       WebAudio 合成音效
   styles/          像素字体、纸张风 UI
+integrations/dsh/  @tofu/dsh-bridge Host-only DSH bundle
 bin/tofu-hook.mjs  无依赖的 agent hook CLI
 scripts/           启动包装、smoke test、截图、图标生成
 docs/HOOKS.md      agent 接入文档
+docs/DSH.md        DeepSeek Harness 安装与事件映射
 ```
 
 运行时只依赖 Electron 自身，没有数据库、没有服务端、没有原生扩展。
