@@ -15,6 +15,7 @@
     "icons": "node scripts/generate-icons.cjs",
     "smoke": "node scripts/smoke.mjs",
     "dist": "electron-builder --win",
+    "dist:zip": "electron-builder --win zip",
     "dist:dir": "electron-builder --win --dir"
   },
   "devDependencies": {
@@ -44,9 +45,19 @@
     ],
     "win": {
       "target": [
-        "zip"
+        "msi"
       ],
       "icon": "assets/icon.png"
+    },
+    "msi": {
+      "oneClick": false,
+      "perMachine": false,
+      "runAfterFinish": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Tofu",
+      "upgradeCode": "{9D0832A7-ED47-489C-B951-D12E137F46F4}",
+      "warningsAsErrors": false
     }
   }
 }

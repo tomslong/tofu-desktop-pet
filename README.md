@@ -31,11 +31,25 @@ npm start
 第一次启动时 Tofu 会冒出一句自我介绍。找不到猫？看系统托盘里的猫脸图标，或按 `Ctrl + Alt + P` 召回。
 
 ```bash
-npm run dist       # 打包 Windows x64 zip 到 release/
+npm run dist       # 打包 Windows x64 MSI 安装包到 release/
+npm run dist:zip   # 需要免安装 zip 时使用
 npm run smoke      # 无 GUI 的 smoke test（需要 Chrome）
 ```
 
 > `npm start` 走的是 `scripts/launch.cjs`。它会剥掉终端里可能继承的 `ELECTRON_RUN_AS_NODE`，避免 Electron 被误当成普通 Node 启动；在 DSH/agent 的受限终端里还会自动补上 `--no-sandbox`。正常双击桌面应用不走这条路径。
+
+### Windows 安装与升级
+
+MSI 采用**当前用户安装**，不需要管理员权限，默认装到 `%LOCALAPPDATA%\Programs\Tofu`，并创建桌面和开始菜单快捷方式。
+
+- 首次安装：双击 `Tofu-<version>-x64.msi`，按向导安装。
+- 以后升级：下载新版 MSI，直接双击运行；相同的 `upgradeCode` 会让 WiX 执行 major upgrade，覆盖旧版本，**不需要解压或手动替换文件**。
+- 名字、毛色、饼干、位置等状态在 `%APPDATA%\Tofu`，升级会保留。
+- MSI 本身不做自动联网更新；Tofu 目前没有内置的 auto-updater。想要"完全无感更新"需要再加更新源和签名，属于另一个发布流程。
+- 卸载：Windows 设置 → 应用 → Tofu，或 `msiexec /x release\Tofu-<version>-x64.msi`。
+- `package.json` 里的 `msi.upgradeCode` 是固定的，**不要改**；改了之后新版本会被 Windows 当成另一个产品，而不会覆盖升级。
+
+> 如果你之前一直在用 zip 免安装版，切到 MSI 后可以把旧文件夹删掉，二者的用户数据是共用的。
 
 ## 操作
 
