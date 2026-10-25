@@ -1,0 +1,10 @@
+node_modules/
+release/
+dist/
+.shots/
+.tmp*/
+.tmp-*
+.electron-*
+*.log
+.DS_Store
+Thumbs.db

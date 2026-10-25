@@ -1,0 +1,116 @@
+@font-face {
+  font-family: "Silkscreen";
+  src: url("../../assets/fonts/Silkscreen-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Silkscreen";
+  src: url("../../assets/fonts/Silkscreen-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plex Mono";
+  src: url("../../assets/fonts/IBMPlexMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Plex Mono";
+  src: url("../../assets/fonts/IBMPlexMono-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fusion Pixel";
+  src: url("../../assets/fonts/FusionPixel12-zh.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2E80-9FFF, U+F900-FAFF, U+3000-303F, U+FF00-FFEF;
+}
+
+:root {
+  --ink: #241c17;
+  --ink-soft: #6d5b4a;
+  --paper: #f6ecd9;
+  --paper-bright: #fff8e9;
+  --paper-dark: #eadabd;
+  --coral: #eb654b;
+  --coral-dark: #c94a35;
+  --mint: #79bda4;
+  --mint-bright: #a8ddc9;
+  --yellow: #f1cf72;
+  --line: rgba(36, 28, 23, 0.14);
+  --shadow: rgba(36, 28, 23, 0.22);
+  --pixel: "Silkscreen", "Fusion Pixel", "Microsoft YaHei UI", monospace;
+  --mono: "Plex Mono", "Fusion Pixel", "Microsoft YaHei UI", "PingFang SC", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--mono);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+::selection {
+  color: var(--paper-bright);
+  background: var(--coral);
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}

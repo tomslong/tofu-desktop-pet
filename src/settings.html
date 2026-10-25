@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tofu — Settings</title>
+    <link rel="icon" href="../assets/icon.png" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/settings.css" />
+  </head>
+  <body>
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+      <symbol id="i-cat" viewBox="0 0 16 16">
+        <rect x="3" y="1" width="2" height="3" />
+        <rect x="11" y="1" width="2" height="3" />
+        <rect x="2" y="3" width="12" height="8" />
+        <rect x="3" y="11" width="10" height="3" />
+        <rect x="5" y="7" width="2" height="2" fill="#f6ecd9" />
+        <rect x="9" y="7" width="2" height="2" fill="#f6ecd9" />
+        <rect x="7" y="9" width="2" height="1" fill="#f6ecd9" />
+      </symbol>
+      <symbol id="i-copy" viewBox="0 0 16 16">
+        <rect x="3" y="2" width="8" height="2" />
+        <rect x="3" y="4" width="2" height="9" />
+        <rect x="9" y="4" width="2" height="9" />
+        <rect x="3" y="11" width="8" height="2" />
+        <rect x="7" y="6" width="7" height="2" fill="#f6ecd9" />
+        <rect x="12" y="8" width="2" height="6" fill="#f6ecd9" />
+      </symbol>
+      <symbol id="i-heart" viewBox="0 0 16 16">
+        <rect x="5" y="3" width="2" height="1" />
+        <rect x="9" y="3" width="2" height="1" />
+        <rect x="4" y="4" width="8" height="2" />
+        <rect x="5" y="6" width="6" height="1" />
+        <rect x="6" y="7" width="4" height="1" />
+        <rect x="7" y="8" width="2" height="1" />
+      </symbol>
+      <symbol id="i-cookie" viewBox="0 0 16 16">
+        <rect x="4" y="2" width="8" height="1" />
+        <rect x="3" y="3" width="10" height="1" />
+        <rect x="2" y="4" width="12" height="6" />
+        <rect x="3" y="10" width="10" height="2" />
+        <rect x="4" y="12" width="8" height="1" />
+        <rect x="5" y="13" width="4" height="1" />
+        <rect x="5" y="5" width="2" height="2" fill="#fff8e9" />
+        <rect x="10" y="4" width="1" height="2" fill="#fff8e9" />
+        <rect x="8" y="8" width="2" height="1" fill="#fff8e9" />
+      </symbol>
+      <symbol id="i-bolt" viewBox="0 0 16 16">
+        <rect x="8" y="1" width="3" height="5" />
+        <rect x="6" y="5" width="3" height="3" />
+        <rect x="5" y="8" width="7" height="2" />
+        <rect x="5" y="10" width="3" height="5" />
+      </symbol>
+    </svg>
+
+    <header class="titlebar">
+      <div class="brand">
+        <span class="brand-mark"><svg class="icon"><use href="#i-cat"></use></svg></span>
+        <span class="brand-name">TOFU</span>
+        <span class="brand-slash">/</span>
+        <span class="brand-sub">SETTINGS</span>
+        <span class="brand-version" id="version-badge">v1.0</span>
+      </div>
+      <div class="window-controls">
+        <button type="button" id="minimize" aria-label="Minimize">—</button>
+        <button type="button" id="close" aria-label="Close">×</button>
+      </div>
+    </header>
+
+    <main class="settings-scroll" id="settings-scroll">
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">DESK COMPANION / 001</p>
+          <h1><span id="hero-name-text">Tofu</span><span class="hero-dot">.</span></h1>
+          <p class="hero-lede">一只陪你把 bug 熬成 feature 的像素猫。<br />不联网，不上班，只上桌面。</p>
+          <div class="hero-live">
+            <span class="live-led" id="live-led"></span>
+            <span id="hero-status">just vibing</span>
+          </div>
+        </div>
+        <div class="hero-pet">
+          <div class="preview-frame">
+            <div class="preview-grid"></div>
+            <canvas id="preview" width="64" height="64" aria-label="Tofu preview"></canvas>
+            <span class="preview-tag">LIVE</span>
+            <span class="preview-corner tl"></span>
+            <span class="preview-corner br"></span>
+          </div>
+          <p class="preview-caption">64 × 64 · hand pixeled</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2><span>01</span> 外观</h2>
+          <span class="section-note">长得顺眼，才写得顺心</span>
+        </div>
+        <div class="panel">
+          <div class="field">
+            <label for="name-input">名字</label>
+            <div class="name-row">
+              <input id="name-input" type="text" maxlength="14" spellcheck="false" autocomplete="off" />
+              <span class="field-hint">最多 14 个字符</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field">
+            <span class="field-label">毛色 / PALETTE</span>
+            <div class="palette-row" id="palette-row" role="radiogroup" aria-label="Pet palette">
+              <button type="button" class="swatch" data-palette="miso" role="radio" aria-checked="false">
+                <span class="swatch-chip" style="--chip: #e79a5d"></span>
+                <span class="swatch-name">Miso</span>
+              </button>
+              <button type="button" class="swatch" data-palette="matcha" role="radio" aria-checked="false">
+                <span class="swatch-chip" style="--chip: #9dbb69"></span>
+                <span class="swatch-name">Matcha</span>
+              </button>
+              <button type="button" class="swatch" data-palette="taro" role="radio" aria-checked="false">
+                <span class="swatch-chip" style="--chip: #b79bcd"></span>
+                <span class="swatch-name">Taro</span>
+              </button>
+              <button type="button" class="swatch" data-palette="yuzu" role="radio" aria-checked="false">
+                <span class="swatch-chip" style="--chip: #ecc65f"></span>
+                <span class="swatch-name">Yuzu</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="field range-field">
+            <div class="range-head">
+              <label for="size-range">桌面尺寸</label>
+              <output id="size-value" for="size-range">100%</output>
+            </div>
+            <input id="size-range" type="range" min="50" max="120" step="5" value="100" />
+            <span class="field-hint">拖完怕找不到？托盘菜单可以「召回 Tofu」。</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2><span>02</span> 行为</h2>
+          <span class="section-note">安静陪着你，也可以很粘人</span>
+        </div>
+        <div class="panel behavior-panel">
+          <div class="toggle-row">
+            <div>
+              <p class="toggle-title">始终置顶</p>
+              <p class="toggle-desc">让 Tofu 待在所有窗口前面。</p>
+            </div>
+            <button type="button" class="switch" role="switch" data-pref="alwaysOnTop" aria-label="始终置顶" aria-checked="true"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <p class="toggle-title">幽灵模式 <span class="tag">点击穿透</span></p>
+              <p class="toggle-desc">只看不摸。可从托盘菜单关闭。</p>
+            </div>
+            <button type="button" class="switch" role="switch" data-pref="ghost" aria-label="幽灵模式" aria-checked="false"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <p class="toggle-title">助手联动</p>
+              <p class="toggle-desc">允许本机 agent 通过 127.0.0.1 触发桌面反应。</p>
+            </div>
+            <button type="button" class="switch" role="switch" data-pref="agentHooks" aria-label="助手联动" aria-checked="true"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <p class="toggle-title">音效</p>
+              <p class="toggle-desc">轻轻的合成器叫声，不吓人。</p>
+            </div>
+            <button type="button" class="switch" role="switch" data-pref="sound" aria-label="音效" aria-checked="true"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <p class="toggle-title">减少动态</p>
+              <p class="toggle-desc">关掉呼吸、摇晃和打字动画。</p>
+            </div>
+            <button type="button" class="switch" role="switch" data-pref="reducedMotion" aria-label="减少动态" aria-checked="false"></button>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <p class="toggle-title">开机启动</p>
+              <p class="toggle-desc">登录系统后，Tofu 自己来桌面报到。</p>
+            </div>
+            <button type="button" class="switch" role="switch" data-pref="launchAtLogin" aria-label="开机启动" aria-checked="false"></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2><span>03</span> 助手联动</h2>
+          <span class="section-note">你的 agent 忙起来，猫也会忙起来</span>
+        </div>
+        <div class="agent-panel">
+          <div class="agent-head">
+            <div class="agent-state">
+              <span class="agent-led" id="hook-led"></span>
+              <span id="hook-label">LISTENING</span>
+            </div>
+            <div class="port-box">
+              <span>127.0.0.1 :</span>
+              <input id="port-input" type="number" min="1024" max="65535" spellcheck="false" aria-label="Hook server port" />
+            </div>
+          </div>
+          <p class="agent-desc">
+            本机的小小 webhook。coding agent 每完成一步，就发一条事件给 Tofu；
+            它会开始打字、检查，或者在你需要确认时抬头看你。
+          </p>
+          <div class="code-block">
+            <code id="hook-command">node bin/tofu-hook.mjs pre --tool edit</code>
+            <button type="button" class="copy-button" id="copy-code" title="复制命令" aria-label="Copy command">
+              <svg class="icon"><use href="#i-copy"></use></svg>
+            </button>
+          </div>
+          <div class="agent-actions">
+            <button type="button" class="mini-btn" data-demo="work">演示一轮</button>
+            <button type="button" class="mini-btn" data-demo="done">完成</button>
+            <button type="button" class="mini-btn" data-demo="fail">报错</button>
+            <button type="button" class="mini-btn" data-demo="waiting">等待确认</button>
+          </div>
+          <details class="hook-help">
+            <summary>怎么接到 Claude Code？</summary>
+            <p>
+              在项目的 <code>.claude/settings.json</code> 里加入 hook，把事件 JSON 从 stdin 交给
+              <code>tofu-hook --stdin</code> 即可。完整示例见 <code>docs/HOOKS.md</code>。
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2><span>04</span> 状态</h2>
+          <span class="section-note">今天也有被好好照顾</span>
+        </div>
+        <div class="panel care-panel">
+          <div class="stat">
+            <span class="stat-label"><svg class="icon"><use href="#i-heart"></use></svg> 心情</span>
+            <span class="stat-bar"><i id="bar-joy"></i></span>
+            <span class="stat-value" id="joy-value">82</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label"><svg class="icon"><use href="#i-bolt"></use></svg> 精力</span>
+            <span class="stat-bar"><i id="bar-energy" class="energy"></i></span>
+            <span class="stat-value" id="energy-value">74</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label"><svg class="icon"><use href="#i-cookie"></use></svg> 饼干</span>
+            <span class="stat-bar"><i id="bar-treats" class="treats"></i></span>
+            <span class="stat-value" id="treats-value">3 / 5</span>
+          </div>
+          <p class="care-meta">已经被摸了 <b id="headpats-value">0</b> 次。<span id="care-note">饼干每两小时补货一块。</span></p>
+          <div class="care-actions">
+            <button type="button" class="btn" data-care="pet">摸摸</button>
+            <button type="button" class="btn" data-care="feed">投喂</button>
+            <button type="button" class="btn" data-care="play">玩一下</button>
+            <button type="button" class="btn" data-care="nap">午睡</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="footer-card">
+        <div>
+          <p class="footer-title">TOFU / DESK COMPANION</p>
+          <p class="footer-copy">手写像素、离线运行、没有遥测。你的猫只住在你电脑里。</p>
+        </div>
+        <div class="footer-actions">
+          <button type="button" class="link-btn" id="reset-position">召回桌面</button>
+          <button type="button" class="link-btn" id="reset-care">重置状态</button>
+          <button type="button" class="link-btn danger" id="quit-app">退出</button>
+        </div>
+      </section>
+
+      <p class="credits">
+        Electron · no sprite sheets were harmed · <span id="credit-version">v1.0.0</span>
+      </p>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <script type="module" src="renderer/settings.js"></script>
+  </body>
+</html>

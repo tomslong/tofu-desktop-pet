@@ -1,0 +1,46 @@
+{
+  "name": "tofu-desktop-pet",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tofu — a handcrafted pixel-art desktop companion that reacts to your coding agent.",
+  "author": "vibe-coding",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "node scripts/launch.cjs",
+    "dev": "node scripts/launch.cjs --dev",
+    "icons": "node scripts/generate-icons.cjs",
+    "smoke": "node scripts/smoke.mjs",
+    "dist": "electron-builder --win",
+    "dist:dir": "electron-builder --win --dir"
+  },
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-builder": "^26.0.12",
+    "puppeteer-core": "^25.16.0"
+  },
+  "build": {
+    "appId": "dev.tofu.deskpet",
+    "productName": "Tofu",
+    "artifactName": "Tofu-${version}-${arch}.${ext}",
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "assets/**/*",
+      "bin/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "zip"
+      ],
+      "icon": "assets/icon.png"
+    }
+  }
+}
